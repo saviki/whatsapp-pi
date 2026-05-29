@@ -35,6 +35,7 @@ export class SessionManager {
     private allowedGroups: Contact[] = [];
     private ignoredNumbers: Contact[] = [];
     private hasAuthState = false;
+    private brandVisibility = true;
     private openaiKey: string = '';
     private visionModel: string = 'gpt-4o';
     private operatorJid: string = '';
@@ -94,6 +95,7 @@ export class SessionManager {
             this.ignoredNumbers = (config.ignoredNumbers || []).map(cleanContact).filter(Boolean) as Contact[];
             this.status = config.status || 'logged-out';
             this.hasAuthState = Boolean(config.hasAuthState);
+            this.brandVisibility = config.brandVisibility !== false;
             this.openaiKey = config.openaiKey || '';
             this.visionModel = config.visionModel || 'gpt-4o';
             this.operatorJid = config.operatorJid || '';
@@ -169,6 +171,7 @@ export class SessionManager {
                 ignoredNumbers: this.ignoredNumbers,
                 status: this.status,
                 hasAuthState: this.hasAuthState,
+                brandVisibility: this.brandVisibility,
                 openaiKey: this.openaiKey,
                 visionModel: this.visionModel,
                 operatorJid: this.operatorJid
@@ -459,6 +462,15 @@ export class SessionManager {
 
     async setStatus(status: SessionStatus) {
         this.status = status;
+        await this.saveConfig();
+    }
+
+    getBrandVisibility(): boolean {
+        return this.brandVisibility;
+    }
+
+    async setBrandVisibility(value: boolean) {
+        this.brandVisibility = value;
         await this.saveConfig();
     }
 
